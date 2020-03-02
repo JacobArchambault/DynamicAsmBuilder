@@ -5,6 +5,7 @@ using static System.Activator;
 using static System.Console;
 using static System.Reflection.Assembly;
 using static System.Threading.Thread;
+using static System.Reflection.Emit.OpCodes;
 
 namespace DynamicAsmBuilder
 {
@@ -81,15 +82,15 @@ namespace DynamicAsmBuilder
               CallingConventions.Standard,
               constructorArgs);
             ILGenerator constructorIL = constructor.GetILGenerator();
-            constructorIL.Emit(OpCodes.Ldarg_0);
+            constructorIL.Emit(Ldarg_0);
             Type objectClass = typeof(object);
             ConstructorInfo superConstructor =
               objectClass.GetConstructor(new Type[0]);
-            constructorIL.Emit(OpCodes.Call, superConstructor);
-            constructorIL.Emit(OpCodes.Ldarg_0);
-            constructorIL.Emit(OpCodes.Ldarg_1);
-            constructorIL.Emit(OpCodes.Stfld, msgField);
-            constructorIL.Emit(OpCodes.Ret);
+            constructorIL.Emit(Call, superConstructor);
+            constructorIL.Emit(Ldarg_0);
+            constructorIL.Emit(Ldarg_1);
+            constructorIL.Emit(Stfld, msgField);
+            constructorIL.Emit(Ret);
 
             // Create the default ctor.
             helloWorldClass.DefineDefaultConstructor(MethodAttributes.Public);
@@ -98,9 +99,9 @@ namespace DynamicAsmBuilder
               helloWorldClass.DefineMethod("GetMsg", MethodAttributes.Public,
               typeof(string), null);
             ILGenerator methodIL = getMsgMethod.GetILGenerator();
-            methodIL.Emit(OpCodes.Ldarg_0);
-            methodIL.Emit(OpCodes.Ldfld, msgField);
-            methodIL.Emit(OpCodes.Ret);
+            methodIL.Emit(Ldarg_0);
+            methodIL.Emit(Ldfld, msgField);
+            methodIL.Emit(Ret);
 
             // Create the SayHello method.
             MethodBuilder sayHiMethod =
@@ -108,7 +109,7 @@ namespace DynamicAsmBuilder
               MethodAttributes.Public, null, null);
             methodIL = sayHiMethod.GetILGenerator();
             methodIL.EmitWriteLine("Hello from the HelloWorld class!");
-            methodIL.Emit(OpCodes.Ret);
+            methodIL.Emit(Ret);
 
             // "Bake" the class HelloWorld.
             // (Baking is the formal term for emitting the type.)
